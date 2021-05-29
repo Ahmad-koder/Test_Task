@@ -2,6 +2,8 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Test_Task
 {
@@ -10,14 +12,25 @@ namespace Test_Task
         public async Task Serialize(ListNode head, Stream s)
         {
             ListNode node = head;
+
+            var settings = new XmlWriterSettings { Indent = true };
+            var writer = XmlWriter.Create(s, settings);
             
-            BinaryFormatter binFormat = new BinaryFormatter();
+            writer.WriteStartElement("root");
+            
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(String));
+            XmlSerializer xmlSerializerNode = new XmlSerializer(typeof(ListNode));
 
             while (node != null)
             {
-                binFormat.Serialize(s, node);
+                xmlSerializer.Serialize(writer, node.Data);
+                
+                xmlSerializerNode.Serialize(writer, node.Random);
+                
                 node = node.Next;
             }
+            
+            writer.Close();
         }
 
         public async Task<ListNode> Deserialize(Stream s)
@@ -25,21 +38,33 @@ namespace Test_Task
             ListNode head = null;
             ListNode tail = null;
 
-            BinaryFormatter binFormat = new BinaryFormatter();
+            var reader = XmlReader.Create(s);
+            reader.ReadToFollowing("string");
             
-            while (s.Position != s.Length)
-            { 
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(String));
+            XmlSerializer xmlSerializerNode = new XmlSerializer(typeof(ListNode));
+            
+            String data = (String) xmlSerializer.Deserialize(reader);
+
+            while (data != null)
+            {
                 if (head == null)
                 {
-                    head = (ListNode) binFormat.Deserialize(s);
+                    head = new ListNode() {Data = data};
+
+                    head.Random = (ListNode) xmlSerializerNode.Deserialize(reader);
+
                     tail = head;
                 }
                 else
                 {
-                    tail.Next = (ListNode) binFormat.Deserialize(s);
-                    tail.Next.Previous = tail;
+                    tail.Next = new ListNode() {Data = data};
+                    tail.Next.Random = (ListNode) xmlSerializerNode.Deserialize(reader);
                     tail = tail.Next;
-                } }
+                }
+                
+                data = (String) xmlSerializer.Deserialize(reader);
+            }
 
             return head;
         }

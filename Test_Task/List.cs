@@ -39,7 +39,7 @@ namespace Test_Task
             }
             else
             {
-                Tail.Next = new ListNode() {Previous = Tail, Next = null, Random = null, Data = data};
+                Tail.Next = new ListNode() { Previous = null, Next = null, Random = null, Data = data};
                 Tail = Tail.Next;
             }
         }

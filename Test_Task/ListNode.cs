@@ -2,13 +2,11 @@
 
 namespace Test_Task
 {
-
-    [Serializable]
     public class ListNode
     {
-        [NonSerialized] public ListNode Previous;
-
-        [NonSerialized] public ListNode Next;
+        public ListNode Previous;
+        
+        public ListNode Next;
 
         public ListNode Random;
 

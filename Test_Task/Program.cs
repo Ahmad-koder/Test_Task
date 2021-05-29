@@ -15,23 +15,22 @@ namespace Test_Task
             list.Insert("Fourth");
             list.Insert("Fifth");
 
+            list.GetHead().Random = list.GetHead().Next;
             list.GetHead().Next.Random = list.Tail;
-            list.Tail.Random = list.GetHead().Next.Next;
-
             ListSerializer listSerializer = new ListSerializer();
-            
-            Stream fStream = new FileStream("FirstTest",
+
+            /*Stream fStream = new FileStream("MyTest11.xml",
                 FileMode.Create, FileAccess.Write, FileShare.None);
             
-            await listSerializer.Serialize(list.GetHead(), fStream);
+            await listSerializer.Serialize(list.GetHead(), fStream);*/
             
             List newList = new List();
             
             //newList.SetHead(await listSerializer.DeepCopy(list.GetHead()));
             
-           // Stream fStream = File.OpenRead("FirstTest");
-            //newList.SetHead(await listSerializer.Deserialize(fStream));
-            
+            Stream fStream = File.OpenRead("MyTest11.xml");
+            newList.SetHead(await listSerializer.Deserialize(fStream));
+            Console.WriteLine("Complete");
             Console.ReadKey();
 
         }
